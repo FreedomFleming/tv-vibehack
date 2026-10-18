@@ -7,18 +7,26 @@
 
     <!-- Apps pinned to the dock row at the bottom, in this order. Missing apps are skipped. -->
     <string-array name="dock_apps">
-        <item>com.netflix.ninja</item>
-        <item>com.amazon.amazonvideo.livingroom</item>
         <item>com.amazon.firetv.youtube</item>
         <item>com.disney.disneyplus</item>
+        <item>com.hulu.plus</item>
+        <item>com.hbo.hbonow</item>
     </string-array>
 
     <!-- Apps never shown as tiles (e.g. the Live TV app, which the Inputs menu already covers). -->
     <string-array name="hidden_apps">
+        <item>com.amazon.firehomestarter</item>
+        <item>com.amazon.ftv.profilepicker</item>
+        <item>com.amazon.ftv.screensaver</item>
+        <item>com.amazon.hedwig</item>
+        <item>com.amazon.ssm</item>
+        <item>com.amazon.vizzini.ftvcds</item>
+        <item>com.android.documentsui</item>
+        <item>com.android.providers.downloads.ui</item>
     </string-array>
 
     <!-- The TV's Live TV / tuner app, offered at the end of the Inputs menu. Leave empty to omit. -->
-    <string name="live_tv_package" translatable="false"></string>
+    <string name="live_tv_package" translatable="false">com.amazon.tv.livetv</string>
 
     <!-- Tiles per row in the grid; the dock always has this many slots. -->
     <integer name="columns">4</integer>
