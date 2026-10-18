@@ -8,7 +8,7 @@ Strip the bloatware from any Android TV or Google TV over Wi-Fi, and replace the
 screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled,
 and a one-line restore if you change your mind.
 
-![Before: stock Google TV home with a sponsored ad. After: the tv-vibehack launcher](docs/stock-vs-new-side.jpg)
+![Before: stock Fire TV home on an Insignia NS-55F301NA22, led by a promoted movie banner and sponsored rows. After: the tv-vibehack launcher with a YouTube, Disney+, Hulu and Max dock](docs/firetv-stock-vs-new-side.jpg)
 
 It started as an afternoon fixing my parents' Mi TV, which showed them an advert before they
 could reach Netflix. The whole thing was done with Claude Code talking to the real TV, and the
@@ -194,8 +194,13 @@ It starts after the TV's "screen off" idle time (`settings get system screen_off
 
 ## Fire TV (Insignia NS-55F301NA22)
 
-Tested on an Insignia NS-55F301NA22 (Fire OS 7, model AFTDCT31, build PS7717.5741N). Fire OS is not
-Android TV, and a few things work differently:
+Tested on an Insignia NS-55F301NA22 (Fire OS 7, model AFTDCT31, build PS7717.5741N).
+
+| Stock Fire TV home | tv-vibehack launcher |
+|---|---|
+| ![Stock Fire TV home with a promoted banner and sponsored rows](docs/firetv-stock-home.jpg) | ![tv-vibehack launcher on the same TV](docs/firetv-new-home.jpg) |
+
+Fire OS is not Android TV, and a few things work differently:
 
 - **Never disable `com.amazon.tv.launcher`.** The Home button is hard-wired to it, and there is no
   default-home setting, so `set-home-activity` and `STOCK_LAUNCHER` are never used.
