@@ -1,0 +1,28 @@
+# Insignia NS-55F301NA22 (Fire TV Edition, Fire OS 7, 55" 4K). UNVERIFIED STARTING POINT.
+# Names come from common Fire TV debloat lists; the assistant must check each against
+# `pm list packages` on the real TV and drop anything not present or unclear.
+# Everything is DISABLED (pm disable-user --user 0), never uninstalled.
+#
+# NEVER disable: com.amazon.tv.launcher (stock Home, Home button is hard-wired to it),
+# com.amazon.tv.settings*, com.amazon.device.*, com.amazon.dcp, com.amazon.imp, com.android.vending,
+# com.amazon.tv.livetv / HDMI input services, com.amazon.alexashopping/voice (remote mic) unless asked,
+# anything with "tvinput", "hdmi", "bluetooth", "inputmethod", "provision" in the name.
+
+# --- Telemetry / metrics ---
+com.amazon.device.metrics
+com.amazon.device.logmanager
+com.amazon.device.crashmanager
+com.amazon.tv.ottssocompanionapp
+
+# --- Ads / recommendations / sponsored rows ---
+com.amazon.advertisingidsettings
+com.amazon.tv.mediaprovider
+com.amazon.recommendations
+com.amazon.bueller.notification
+com.amazon.tv.notificationcenter
+
+# --- Preloaded junk (check what is actually installed) ---
+com.amazon.firetv.deals
+com.amazon.tv.csapp
+com.amazon.tv.nimh
+com.amazon.tv.legal.notices

@@ -1,5 +1,7 @@
 # tv-vibehack
 
+> **Fire TV branch (`firetv`)**: adapted for the Insignia NS-55F301NA22. Use [PROMPT-FIRETV.md](PROMPT-FIRETV.md). The stock Fire launcher must stay enabled; install the launcher with `FIRE_TV=1 launcher/build-and-install.sh`.
+
 **Your TV, minus the ads.**
 
 Strip the bloatware from any Android TV or Google TV over Wi-Fi, and replace the ad-filled home
