@@ -91,10 +91,21 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         Intent probe = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         List<ResolveInfo> found = pm.queryIntentActivities(probe, 0);
         List<Entry> fresh = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
         for (ResolveInfo ri : found) {
             if (ri.activityInfo == null) continue;
             String pkg = ri.activityInfo.packageName;
             if (pkg.equals(ctx.getPackageName()) || hidden.contains(pkg)) continue;
+            // One tile per app: some (Fire TV AirPlay, TNT) export several launcher activities.
+            if (!seen.add(pkg)) continue;
+            Intent main = pm.getLeanbackLaunchIntentForPackage(pkg);
+            if (main != null && main.getComponent() != null) {
+                ri = pm.resolveActivity(main, 0);
+                if (ri == null || ri.activityInfo == null) continue;
+            }
+            // Skip apps only the system may start (Fire TV AirPlay needs com.amazon.airplay.permission.LAUNCH).
+            String perm = ri.activityInfo.permission;
+            if (perm != null && ctx.checkSelfPermission(perm) != PackageManager.PERMISSION_GRANTED) continue;
             Drawable banner = ri.activityInfo.loadBanner(pm);
             if (banner == null) banner = ri.activityInfo.applicationInfo.loadBanner(pm);
             Drawable icon = ri.loadIcon(pm);

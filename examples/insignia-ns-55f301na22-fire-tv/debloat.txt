@@ -1,28 +1,46 @@
-# Insignia NS-55F301NA22 (Fire TV Edition, Fire OS 7, 55" 4K). UNVERIFIED STARTING POINT.
-# Names come from common Fire TV debloat lists; the assistant must check each against
-# `pm list packages` on the real TV and drop anything not present or unclear.
-# Everything is DISABLED (pm disable-user --user 0), never uninstalled.
+# Insignia NS-55F301NA22 (Fire TV Edition, Fire OS 7 / Android 9, model AFTDCT31 "duckie",
+# build PS7717.5741N). Verified against `pm list packages` on the real TV, Oct 2026.
+# Everything is DISABLED (pm disable-user --user 0), never uninstalled. Undo: tools/restore.sh <this file>.
 #
 # NEVER disable: com.amazon.tv.launcher (stock Home, Home button is hard-wired to it),
-# com.amazon.tv.settings*, com.amazon.device.*, com.amazon.dcp, com.amazon.imp, com.android.vending,
-# com.amazon.tv.livetv / HDMI input services, com.amazon.alexashopping/voice (remote mic) unless asked,
-# anything with "tvinput", "hdmi", "bluetooth", "inputmethod", "provision" in the name.
+# com.amazon.tv.settings*, com.amazon.dcp, com.amazon.imp, com.amazon.venezia (Appstore),
+# com.amazon.tv.livetv / com.mediatek.* / com.amazon.franktvinput (inputs/HDMI), com.amazon.tv.ime,
+# Bluetooth/remote packages, and shared-library hosts (com.amazon.client.metrics.api,
+# com.amazon.dp.logger, com.amazon.media.recommendations, com.amazon.privacypassservice).
+# Kept on purpose: com.amazon.tv.ottssocompanionapp (OTT single sign-on, not telemetry),
+# com.amazon.vizzini (Alexa voice on the remote), OTA updates, all streaming apps.
 
-# --- Telemetry / metrics ---
-com.amazon.device.metrics
-com.amazon.device.logmanager
-com.amazon.device.crashmanager
-com.amazon.tv.ottssocompanionapp
-
-# --- Ads / recommendations / sponsored rows ---
-com.amazon.advertisingidsettings
-com.amazon.tv.mediaprovider
-com.amazon.recommendations
-com.amazon.bueller.notification
+# --- Ads / recommendations / shopping ---
+com.amazon.tv.acr                      # automatic content recognition of what's on screen
+com.amazon.hybridadidservice           # advertising ID
+com.amazon.sneakpeek                   # autoplay previews on Home
+com.amazon.shoptv.client
+com.amazon.shoptv.firetv.client
 com.amazon.tv.notificationcenter
 
-# --- Preloaded junk (check what is actually installed) ---
-com.amazon.firetv.deals
-com.amazon.tv.csapp
-com.amazon.tv.nimh
+# --- Telemetry / metrics ---
+com.amazon.tv.fw.metrics
+com.amazon.wirelessmetrics.service
+com.amazon.perfcollection
+com.amazon.neo.minerva.logcat
+
+# --- Alexa extras (voice search stays) ---
+com.amazon.tv.alexaalerts
+com.amazon.tv.alexanotifications
+
+# --- Preloaded junk ---
 com.amazon.tv.legal.notices
+com.amazon.tv.releasenotes
+com.amazon.storm.lightning.tutorial
+com.amazon.tmm.tutorial
+com.amazon.tv.democontent.provider     # retail demo content
+com.amazon.minitv.android.app          # India-only stub
+com.android.printspooler
+# com.android.bips                     # disables, but Fire OS re-enables it at boot
+
+# --- Fire OS refuses these ("Cannot disable a protected package"); listed for reference only ---
+# com.amazon.ftvads.deeplinking
+# com.amazon.device.metrics
+# com.amazon.device.crashmanager
+# com.amazon.device.logmanager
+# com.amazon.tv.csapp

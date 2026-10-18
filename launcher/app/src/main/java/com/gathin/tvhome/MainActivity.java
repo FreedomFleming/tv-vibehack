@@ -162,7 +162,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View btnSettings = findViewById(R.id.btnSettings);
         btnInputs.setOnClickListener(v -> showInputs());
         btnWifi.setOnClickListener(v -> open(new Intent(Settings.ACTION_WIFI_SETTINGS)));
-        btnSettings.setOnClickListener(v -> open(new Intent(Settings.ACTION_SETTINGS)));
+        btnSettings.setOnClickListener(v -> {
+            // Fire OS shows Settings inside Amazon's launcher; tell the Home redirect to leave it open.
+            HomeRedirectService.settingsOpenedAt = android.os.SystemClock.uptimeMillis();
+            open(new Intent(Settings.ACTION_SETTINGS));
+        });
 
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
@@ -451,7 +455,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // so drop the HDMI status then. A TV with every port really in use loses it too.
             int hdmiPorts = 0, hdmiConnected = 0;
             for (TvInputInfo info : inputs) {
-                if (!info.isPassthroughInput() || info.getType() != TvInputInfo.TYPE_HDMI) continue;
+                if (!info.isPassthroughInput() || info.getType() != TvInputInfo.TYPE_HDMI || info.getParentId() != null) continue;
                 hdmiPorts++;
                 if (tim.getInputState(info.getId()) == TvInputManager.INPUT_STATE_CONNECTED) hdmiConnected++;
             }
@@ -462,7 +466,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         && (tunerId == null || info.getId().compareTo(tunerId) < 0)) {
                     tunerId = info.getId();
                 }
-                if (!info.isPassthroughInput()) continue;
+                // CEC devices ("HDMI Living Room") show up as children of their port; list only the ports.
+                if (!info.isPassthroughInput() || info.getParentId() != null) continue;
                 CharSequence l = info.loadLabel(this);
                 String label = l == null ? info.getId() : l.toString();
                 boolean hdmi = info.getType() == TvInputInfo.TYPE_HDMI;
@@ -477,7 +482,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         Intent liveTv = liveTvPkg.isEmpty() ? null : getPackageManager().getLeanbackLaunchIntentForPackage(liveTvPkg);
-        if (liveTv != null && tunerId != null) {
+        // Fire OS: the Live TV app (com.amazon.tv.livetv) has no launcher entry but still plays the tuner.
+        if (!liveTvPkg.isEmpty() && tunerId != null) {
             liveTv = new Intent(Intent.ACTION_VIEW)
                     .setDataAndType(TvContract.buildChannelUriForPassthroughInput(tunerId), "vnd.android.cursor.item/channel")
                     .setPackage(liveTvPkg);

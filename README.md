@@ -24,6 +24,7 @@ prompt that did it is in this repo so you can do the same with yours.
 - [Supported TVs](#supported-tvs)
 - [Doing it by hand](#doing-it-by-hand)
 - [The launcher](#the-launcher)
+- [Fire TV (Insignia NS-55F301NA22)](#fire-tv-insignia-ns-55f301na22)
 - [Troubleshooting](#troubleshooting)
 - [Questions people ask](#questions-people-ask)
 - [Contributing](#contributing)
@@ -190,6 +191,81 @@ tools/venv/bin/python -I tools/tv.py 'settings put secure screensaver_components
 
 It starts after the TV's "screen off" idle time (`settings get system screen_off_timeout`).
 </details>
+
+## Fire TV (Insignia NS-55F301NA22)
+
+Tested on an Insignia NS-55F301NA22 (Fire OS 7, model AFTDCT31, build PS7717.5741N). Fire OS is not
+Android TV, and a few things work differently:
+
+- **Never disable `com.amazon.tv.launcher`.** The Home button is hard-wired to it, and there is no
+  default-home setting, so `set-home-activity` and `STOCK_LAUNCHER` are never used.
+- **Some packages are protected.** `pm disable-user` refuses `com.amazon.device.metrics`,
+  `com.amazon.device.crashmanager`, `com.amazon.device.logmanager`, `com.amazon.ftvads.deeplinking`
+  and `com.amazon.tv.csapp` ("Cannot disable a protected package"). The list in
+  [`examples/insignia-ns-55f301na22-fire-tv/debloat.txt`](examples/insignia-ns-55f301na22-fire-tv/debloat.txt)
+  contains only what actually disabled.
+
+**Back up, debloat, restore.**
+
+```bash
+export TV_HOST=192.168.50.92
+mkdir -p backup
+tools/venv/bin/python -I tools/tv.py pm list packages -f > backup/packages-f.txt
+tools/venv/bin/python -I tools/tv.py pm list packages -d > backup/packages-disabled.txt
+tools/venv/bin/python -I tools/tv.py getprop > backup/getprop.txt
+for ns in system secure global; do tools/venv/bin/python -I tools/tv.py settings list $ns > backup/settings-$ns.txt; done
+tools/disable.sh examples/insignia-ns-55f301na22-fire-tv/debloat.txt
+```
+
+`backup/` is gitignored because it holds your TV's serial and IDs. To undo everything, run
+restore with `FIRE_TV=1`. It never touches the home activity, re-enables the list plus anything
+disabled since the backup, and puts the backed-up screensaver and accessibility settings back.
+Add `DRY_RUN=1` to print the commands first:
+
+```bash
+FIRE_TV=1 DRY_RUN=1 tools/restore.sh examples/insignia-ns-55f301na22-fire-tv/debloat.txt
+FIRE_TV=1 tools/restore.sh examples/insignia-ns-55f301na22-fire-tv/debloat.txt
+tools/venv/bin/python -I tools/tv.py pm uninstall com.gathin.tvhome   # optional: remove the launcher too
+```
+
+**Install the launcher** next to Amazon's:
+
+```bash
+FIRE_TV=1 FIRE_HOME_REDIRECT=1 launcher/build-and-install.sh
+```
+
+The launcher also shows up as "Home" in Your Apps. On Fire OS:
+
+- **Inputs** lists HDMI 1–3 and Composite. Live TV (`com.amazon.tv.livetv`, set as `live_tv_package`)
+  opens the antenna tuner. CEC devices that Fire OS reports as extra inputs are hidden.
+- **Settings** opens Fire TV Settings. Its top-level grid lives inside Amazon's launcher; some
+  sections (Display & Sounds, Preferences, Accessibility, My Account) can't be opened directly
+  because they need Amazon's `LAUNCHER_SETTINGS` permission.
+- Apps that only Amazon may start (AirPlay) get no tile. AirPlay still receives in the background.
+
+**The Home button.** `FIRE_HOME_REDIRECT=1` turns on a small accessibility service in the launcher
+(`HomeRedirectService`). It watches which activity is in front, and when Amazon's home appears it
+opens this launcher instead. It reads no screen content and never swallows keys. What to expect:
+
+| You press | You see |
+|---|---|
+| Back out of an app | the new launcher, straight away |
+| Home | Amazon's home for about 5 s, then the new launcher |
+| Back on the Fire TV Settings grid | the new launcher, straight away |
+
+The 5 seconds after Home can't be avoided without root. Fire OS handles Home before any
+accessibility service sees it, and Android then blocks other apps from starting activities for
+5 s. A note for testing: `am force-stop com.gathin.tvhome` unbinds the service, so toggle it again
+(the install script does). Keys injected with `input keyevent` don't reach it; only a real remote's do.
+To turn the redirect off:
+
+```bash
+tools/venv/bin/python -I tools/tv.py "settings put secure enabled_accessibility_services ''"
+tools/venv/bin/python -I tools/tv.py settings put secure accessibility_enabled 0
+```
+
+**Clock screensaver.** Fire OS accepts `screensaver_components`, but its idle timer is
+`settings get secure contextual_screen_off_timeout` (10 minutes by default), not `screen_off_timeout`.
 
 ## Troubleshooting
 
